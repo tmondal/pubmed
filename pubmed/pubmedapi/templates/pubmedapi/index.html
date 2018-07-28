@@ -1,0 +1,18 @@
+<html>
+    <body>
+        <div>
+            <form method="POST" >
+            {% csrf_token %}
+            <di>
+                {{ form }}
+            </div>
+            <div>
+                <button type="submit">Search</button>
+            </div>
+            </form>
+        </div>
+        <div>
+            <h2>You searched: {{data}}</h2>
+        </div>
+    </body>
+</html>
