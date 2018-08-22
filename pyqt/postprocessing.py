@@ -1,6 +1,7 @@
 import os
 import json
 from mesh_explosion import DataForEachMeshTerm
+import operator
 
 
 class PostProcessing():
@@ -67,3 +68,37 @@ class PostProcessing():
                     i += 1
             i += 1
         return title
+
+    def term_tagging(self,optimized_terms):
+       
+        term_dict = {}
+        for terms in optimized_terms:
+            for term in terms:
+                i = 0
+                count=0
+                st = ""
+                while i<len(term):
+                    if term[i] == '"':
+                        count += 1
+                        if count%2==0:
+                            self.countoccurrences(term_dict,st) 
+                        st = ""
+                    else:
+                        st += term[i]
+                    i += 1
+
+        print(term_dict)
+
+        sorted_dict = sorted(term_dict.items(), key=operator.itemgetter(1),reverse=True)
+
+        print(sorted_dict)
+
+        return sorted_dict
+
+
+    def countoccurrences(self,store,value):
+        try:
+            store[value] = store[value] + 1
+        except KeyError as e:
+            store[value] = 1
+        return
