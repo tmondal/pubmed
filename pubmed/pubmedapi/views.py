@@ -48,7 +48,7 @@ class IndexView(View):
 
             abstract = []
             idlist = res['esearchresult']['idlist']
-            # print(idlist)
+            print(idlist)
             for id in idlist:
                 print(id)
                 abstracturl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&api_key=947c1845e9a006cd589f251e11def613e308&id={}&retmode=text&rettype=abstract'
