@@ -21,14 +21,13 @@ class PostProcessing():
 
 
     def split_abstracts(self,index,data):
-        # lines = data.split('\n')
         article = ""
         count = 0
         allabs = []
         alltitles = []
         i = 0
         while(i < len(data)):
-            if count == (index+1)*5:
+            if count == (index+1)*3:
                 break
             elif (data[i] == 'P' and data[i+1] == 'M' and data[i+2] == 'I' and data[i+3] == 'D'):
                 c = 0
@@ -37,8 +36,8 @@ class PostProcessing():
                         c += 1
                     i += 1
                     
-                if count >= index*5:
-                    allabs.append(article)
+                if count >= index*3:
+                    allabs.append(self.getProcessedAbs(article))
                     alltitles.append(self.getTitleFromAbs(article))
                 article = ""
                 count += 1
@@ -47,6 +46,28 @@ class PostProcessing():
             i += 1
 
         return alltitles,allabs
+    def getProcessedAbs(self, article):
+        abs = ""
+        i = 0
+        count = 0
+        c = 0
+        while (i < len(article)):
+            if article[i] == '\n' and article[i+1] == '\n':
+                count += 1
+            if(count == 3):
+                if(article[i+2] == 'A' and (article[i+3] == 'u' or article[i+3] == 'U') and (article[i+4] == 't' or article[i+4] == 'T') 
+                and (article[i+5] == 'h' or article[i+5] == 'H') and (article[i+6] == 'o' or article[i+6] == 'O')):
+                    count -= 1
+                else:
+                    i += 2
+                    while(c < 2):
+                        abs += article[i]
+                        if(article[i] == '\n'):
+                            c += 1
+                        i += 1
+                    break
+            i += 1
+        return abs        
 
     def getTitleFromAbs(self, article):
         found = False

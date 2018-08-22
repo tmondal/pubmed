@@ -29,12 +29,12 @@ class App(QWidget):
 
 	def initUI(self):
 		self.setWindowTitle(self.title)
-		self.setGeometry(self.left, self.top, self.width, self.height)
+		self.showMaximized()	
 
 		# Create grid
 		self.grid = QGridLayout()
 		self.setLayout(self.grid)
-		self.grid.setSpacing(0)	
+		self.grid.setSpacing(0)
 		
 		# Search field
 		self.searchbox = QLineEdit(self)
@@ -60,13 +60,13 @@ class App(QWidget):
 		self.filelabel = QLabel(self)
 
 		# Add second row to grid
-		self.grid.addWidget(self.gene_button,1,0,1,2)
-		self.grid.addWidget(self.pmid_button,1,1,1,2)
-		self.grid.addWidget(self.choose_file,1,3)
-		self.grid.addWidget(self.filelabel,1,4)
+		self.grid.addWidget(self.gene_button,1,0,1,1)
+		self.grid.addWidget(self.pmid_button,1,2,1,1)
+		self.grid.addWidget(self.choose_file,1,3,1,2)
+		self.grid.addWidget(self.filelabel,1,5,1,5)
 
 		# Recommend label and Third row
-		self.mtlabel = QLabel('Recommended search Terms: ')
+		self.mtlabel = QLabel(' ')
 		self.mtlabel.setFixedHeight(40)
 		self.dummy = QLabel(' ')
 		self.grid.addWidget(self.mtlabel,2,0)
@@ -76,38 +76,27 @@ class App(QWidget):
 		self.mt1 = QPushButton('')
 		self.mt1.setStyleSheet('border: None; text-decoration: underline')
 		self.mt1.clicked.connect(self.representative_click)
-		# self.mt2 = QPushButton('')
-		# self.mt2.setStyleSheet('border: None; text-decoration: underline')
-		# self.mt2.clicked.connect(lambda:self.meshterm_click(self.mt2))
-		# self.mt3 = QPushButton('')
-		# self.mt3.setStyleSheet('border: None; text-decoration: underline')
-		# self.mt3.clicked.connect(lambda:self.meshterm_click(self.mt3))
-		# self.mt4 = QPushButton('')
-		# self.mt4.setStyleSheet('border: None; text-decoration: underline')
-		# self.mt4.clicked.connect(lambda:self.meshterm_click(self.mt4))
-		# self.mt5 = QPushButton('')
-		# self.mt5.setStyleSheet('border: None; text-decoration: underline')
-		# self.mt5.clicked.connect(lambda:self.meshterm_click(self.mt5))
+		self.mt2 = QPushButton(' ')
+		self.mt2.setStyleSheet('border: None')
+		self.mt2.clicked.connect(self.more_meshterm_click)
 
 		# Add Fourth row to grid
-		self.grid.addWidget(self.mt1,3,0,1,4)
-		# self.grid.addWidget(self.mt2,3,1)
-		# self.grid.addWidget(self.mt3,3,2)
-		# self.grid.addWidget(self.mt2,3,3)
-		# self.grid.addWidget(self.mt3,3,4)
+		self.grid.addWidget(self.mt1,3,0,1,8)
+		self.grid.addWidget(self.mt2,3,9)
+		
 
 		# Top result placeholder buttons
 		self.title1 = QPushButton('Title one')
 		self.title1.setStyleSheet('border: None; text-decoration: underline; padding-top: 40px')
-		self.abs1 = QTextEdit("dksjfahsdkajhvkjsdvnsafnkjsdhfkjsdagksdafkdsagkjshfiurhfirnviunvirueanifudsiuvnsivndfnvaianvirnekngifuanvifnvkfnd")
+		self.abs1 = QTextEdit("Abstracts one")
 		self.abs1.setReadOnly(True)
 		self.title2 = QPushButton('Title two')
 		self.title2.setStyleSheet('border: None; text-decoration: underline')
-		self.abs2 = QTextEdit("uyrwejsvniunfksdaffffbdfuanvkjsdnvlksdnfhgfldnfksdnflsndf")
+		self.abs2 = QTextEdit("Abstracts two")
 		self.abs2.setReadOnly(True)
 		self.title3 = QPushButton('Title three')
 		self.title3.setStyleSheet('border: None; text-decoration: underline')
-		self.abs3 = QTextEdit("vxc,mnvureglsavnlskdvmldfnbknlmncljsdncvkjdnvlkjdfns")
+		self.abs3 = QTextEdit("Abstracts three")
 		self.abs3.setReadOnly(True)
 
 		# Add Fourth row to grid
@@ -125,9 +114,29 @@ class App(QWidget):
 		self.genecloud.setStyleSheet('border: None; text-decoration: underline')
 		self.meshcloud = QPushButton('Mesh cloud')
 		self.meshcloud.setStyleSheet('border: None; text-decoration: underline')
-		self.grid.addWidget(self.vizlabel,4,7)
-		self.grid.addWidget(self.genecloud,5,7)
-		self.grid.addWidget(self.meshcloud,6,7)
+		self.grid.addWidget(self.vizlabel,4,6)
+		self.grid.addWidget(self.genecloud,5,6)
+		self.grid.addWidget(self.meshcloud,6,6)
+
+		# Tags
+		self.tags = QLabel('Tags:')
+		self.tags.setStyleSheet('padding-top: 40px')
+		self.tag1 = QPushButton('Tag one')
+		self.tag1.setStyleSheet('border: None; text-decoration: underline')
+		self.tag2 = QPushButton('Tag two')
+		self.tag2.setStyleSheet('border: None; text-decoration: underline')
+		self.tag3 = QPushButton('Tag three')
+		self.tag3.setStyleSheet('border: None; text-decoration: underline')
+		self.tag4 = QPushButton('Tag four')
+		self.tag4.setStyleSheet('border: None; text-decoration: underline')
+		self.tag5 = QPushButton('Tag five')
+		self.tag5.setStyleSheet('border: None; text-decoration: underline')
+		self.grid.addWidget(self.tags,7,6)
+		self.grid.addWidget(self.tag1,8,6)
+		self.grid.addWidget(self.tag2,8,7)
+		self.grid.addWidget(self.tag3,8,8)
+		self.grid.addWidget(self.tag4,9,6)
+		self.grid.addWidget(self.tag5,9,7)
 
 		self.show()
 
@@ -145,25 +154,40 @@ class App(QWidget):
 				path = mesh_explosion.get_data_foldername(_textval)
 				print("sending rel_docs: ",len(self.rel_docs))
 				clus = Clusterer(self.rel_docs,path,True,8)
-				self.representative_id,representative,best_mesh_terms_id, best_mesh_terms = clus.cluster()
-				self.mt1.setText(representative)
-				# self.populateTitleAbs(json_no)
+				self.representative_id,self.representative,self.best_mesh_terms_id, self.best_mesh_terms = clus.cluster()
+				if self.representative:
+					self.updateRepresentativeInformation()
 			else:
 				print("Error! getting file name")
 		elif self.pmid_button.isChecked():
 			print("Golden corpus exists..")
 		else:
 			print("Please select related file..")
+	def updateRepresentativeInformation(self):
+		self.mtlabel.setText('Recommended search Term: ')
+		self.mt1.setText(self.representative)
+		self.mt2.setText('More Terms')
+		self.mt2.setStyleSheet('border-width: 1px 1px; font-weight: bold')
+
 	def representative_click(self):
 		text = self.mt1.text()
-		self.searchbox.setText(text)
+		# self.searchbox.setText(text)
 		self.populateTitleAbs(self.representative_id)
 
 	def populateTitleAbs(self,json_no):
 		index = 0
 		pp = PostProcessing()
 		titles , abstracts = pp.getTitleAbs(index,json_no,self._search_term)
-		print(titles)
+		# print(abstracts)
+		self.title1.setText(titles[0])
+		self.title2.setText(titles[1])
+		self.title3.setText(titles[2])
+		self.abs1.setText(abstracts[0])
+		self.abs2.setText(abstracts[1])
+		self.abs3.setText(abstracts[2])
+	
+	def more_meshterm_click(self):
+		pass
 
 	def chooseFile(self): 
 		if self.fileselected:
