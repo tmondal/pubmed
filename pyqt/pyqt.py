@@ -10,6 +10,7 @@ from goldencorpus import GoldenCorpus
 from mesh_explosion import DataForEachMeshTerm
 from clusterer import Clusterer
 from postprocessing import PostProcessing
+from more_mesh_terms import MoreMeshTerms
 
  
 class App(QWidget):
@@ -187,7 +188,7 @@ class App(QWidget):
 		self.abs3.setText(abstracts[2])
 	
 	def more_meshterm_click(self):
-		pass
+		popup = MoreMeshTerms()
 
 	def chooseFile(self): 
 		if self.fileselected:
