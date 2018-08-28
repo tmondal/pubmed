@@ -10,7 +10,8 @@ from goldencorpus import GoldenCorpus
 from mesh_explosion import DataForEachMeshTerm
 from clusterer import Clusterer
 from postprocessing import PostProcessing
-
+# from more_mesh_terms import MoreMeshTerms
+import more_mesh_terms
  
 class App(QWidget):
 
@@ -38,6 +39,7 @@ class App(QWidget):
 		
 		# Search field
 		self.searchbox = QLineEdit(self)
+		self.searchbox.setText('breast cancer')
 		self.searchbox.move(50, 20)
 		self.searchbox.resize(280,40)
 		
@@ -119,24 +121,24 @@ class App(QWidget):
 		self.grid.addWidget(self.meshcloud,6,6)
 
 		# Tags
-		self.tags = QLabel('Tags:')
-		self.tags.setStyleSheet('padding-top: 40px')
-		self.tag1 = QPushButton('Tag one')
-		self.tag1.setStyleSheet('border: None; text-decoration: underline')
-		self.tag2 = QPushButton('Tag two')
-		self.tag2.setStyleSheet('border: None; text-decoration: underline')
-		self.tag3 = QPushButton('Tag three')
-		self.tag3.setStyleSheet('border: None; text-decoration: underline')
-		self.tag4 = QPushButton('Tag four')
-		self.tag4.setStyleSheet('border: None; text-decoration: underline')
-		self.tag5 = QPushButton('Tag five')
-		self.tag5.setStyleSheet('border: None; text-decoration: underline')
-		self.grid.addWidget(self.tags,7,6)
-		self.grid.addWidget(self.tag1,8,6)
-		self.grid.addWidget(self.tag2,8,7)
-		self.grid.addWidget(self.tag3,8,8)
-		self.grid.addWidget(self.tag4,9,6)
-		self.grid.addWidget(self.tag5,9,7)
+		# self.tags = QLabel('Tags:')
+		# self.tags.setStyleSheet('padding-top: 40px')
+		# self.tag1 = QPushButton('Tag one')
+		# self.tag1.setStyleSheet('border: None; text-decoration: underline')
+		# self.tag2 = QPushButton('Tag two')
+		# self.tag2.setStyleSheet('border: None; text-decoration: underline')
+		# self.tag3 = QPushButton('Tag three')
+		# self.tag3.setStyleSheet('border: None; text-decoration: underline')
+		# self.tag4 = QPushButton('Tag four')
+		# self.tag4.setStyleSheet('border: None; text-decoration: underline')
+		# self.tag5 = QPushButton('Tag five')
+		# self.tag5.setStyleSheet('border: None; text-decoration: underline')
+		# self.grid.addWidget(self.tags,7,6)
+		# self.grid.addWidget(self.tag1,8,6)
+		# self.grid.addWidget(self.tag2,8,7)
+		# self.grid.addWidget(self.tag3,8,8)
+		# self.grid.addWidget(self.tag4,9,6)
+		# self.grid.addWidget(self.tag5,9,7)
 
 		self.show()
 
@@ -168,6 +170,26 @@ class App(QWidget):
 		self.mt1.setText(self.representative)
 		self.mt2.setText('More Terms')
 		self.mt2.setStyleSheet('border-width: 1px 1px; font-weight: bold')
+		pp = PostProcessing()
+		tags = pp.term_tagging(self.best_mesh_terms)
+		self.tags = QLabel('Tags:')
+		self.tags.setStyleSheet('padding-top: 40px')
+		self.grid.addWidget(self.tags,7,6)
+		row = 8
+		col = 6
+		c = 0
+		if tags:
+			for _k, _v in tags:
+				self.grid.addWidget(TagButton(_k),row,col)
+				# c += 1
+				# if c == 3:
+				# 	col = 6
+				# 	c = 0
+				# else:
+				# 	col += 1
+				row += 1
+		else:
+			print("No tags!")
 
 	def representative_click(self):
 		text = self.mt1.text()
@@ -187,6 +209,10 @@ class App(QWidget):
 		self.abs3.setText(abstracts[2])
 	
 	def more_meshterm_click(self):
+		# popup = MoreMeshTerms(self.best_mesh_terms)
+		# more_mesh_terms.main(self.best_mesh_terms)
+		# popup.show()
+		# term_id = popup.getTermId()
 		pass
 
 	def chooseFile(self): 
@@ -199,7 +225,11 @@ class App(QWidget):
 			self.filelabel.setText(self.fileName)
 			self.fileselected = 1;
 	
-
+class TagButton(QPushButton):
+	def __init__(self,term):
+		super(TagButton, self).__init__()
+		self.setText(term)
+		self.setStyleSheet('border: None; text-decoration: underline')
 
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
