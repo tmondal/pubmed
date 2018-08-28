@@ -115,14 +115,13 @@ class Clusterer:
 		sortedscore = sorted(clus_dict.items(), reverse=True)
 		# print(sortedscore)
 		optimized_query = []
-		for i in range(0,num_clusters):
-			optimized_query.append([])
 		optimized_query_ids = []
-		for i in range(0,num_clusters):
-		    optimized_query_ids.append([])
 		done = 0
+		j = 0
 		min = sys.float_info.max
 		for _score , _clus_no in sortedscore:
+			optimized_query.append([])
+			optimized_query_ids.append([])
 			for _k in query_clusters[_clus_no]:
 				if not done:
 					dist = distance.euclidean(cluster_centers[_clus_no], X[_k - 1].toarray())
@@ -131,8 +130,9 @@ class Clusterer:
 						representative = data_query_label[_k-1]
 						representative_id = _k
 						print("----------------------------------------",_k)
-				optimized_query_ids[_clus_no].append(_k)
-				optimized_query[_clus_no].append(data_query_label[_k-1])
+				optimized_query_ids[j].append(_k)
+				optimized_query[j].append(data_query_label[_k-1])
+			j += 1
 			done = 1
 		
 		# print(optimized_query)
