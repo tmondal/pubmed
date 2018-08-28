@@ -2,6 +2,8 @@ import os
 import json
 from mesh_explosion import DataForEachMeshTerm
 import operator
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 
 class PostProcessing():
@@ -113,7 +115,6 @@ class PostProcessing():
         sorted_dict = sorted(term_dict.items(), key=operator.itemgetter(1),reverse=True)
 
         print(sorted_dict)
-        
 
         return sorted_dict
 
@@ -124,3 +125,45 @@ class PostProcessing():
         except KeyError as e:
             store[value] = 1
         return
+
+
+    def gene_cloud(self,term_id,gene_file_name):
+
+        file_name = str(term_id)+'.json'
+        f = open(file_name, 'r')
+        json_object = json.load(f)
+        f.close()
+
+        data_abstract = json_object["abstracts"]
+
+        content = data_abstract.replace('\n', ' ')
+        content = content.replace('(', ' ')
+        content = content.replace(')', ' ')
+        content = content.replace('.', ' ')
+        content = content.replace(',', ' ')
+        content = content.lower()
+        # print(content)
+
+        data = content.split()
+
+        filepointer = open(gene_file_name,'r')
+        genefile = filepointer.read().lower().split('\n')
+
+        gene_dict = {} 
+
+        for gene in genefile:
+            if gene:
+                gene_dict[gene] = data.count(gene)+1.0
+
+        
+        wordcloud = WordCloud(width = 800, height = 800,
+                                background_color ='white',
+                                min_font_size = 10).fit_words(gene_dict)
+        
+        # plot the WordCloud image                       
+        plt.figure(figsize = (8, 8), facecolor = None)
+        plt.imshow(wordcloud)
+        plt.axis("off")
+        plt.tight_layout(pad = 0)
+        
+        plt.show()
