@@ -14,7 +14,7 @@ class MoreMeshTerms(object):
         self.centralWidget = QWidget(parent)
         # main layout
         self.vLayout = QVBoxLayout(self.centralWidget)
-        parent.resize(600,600);
+        parent.resize(600,600)
 
         # main button
         # self.pButton_add = QPushButton(self.centralWidget)

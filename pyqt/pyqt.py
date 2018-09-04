@@ -116,26 +116,6 @@ class App(QWidget):
 		self.grid.addWidget(self.genecloud,5,6)
 		self.grid.addWidget(self.meshcloud,6,6)
 
-		# Tags
-		# self.tags = QLabel('Tags:')
-		# self.tags.setStyleSheet('padding-top: 40px')
-		# self.tag1 = QPushButton('Tag one')
-		# self.tag1.setStyleSheet('border: None; text-decoration: underline')
-		# self.tag2 = QPushButton('Tag two')
-		# self.tag2.setStyleSheet('border: None; text-decoration: underline')
-		# self.tag3 = QPushButton('Tag three')
-		# self.tag3.setStyleSheet('border: None; text-decoration: underline')
-		# self.tag4 = QPushButton('Tag four')
-		# self.tag4.setStyleSheet('border: None; text-decoration: underline')
-		# self.tag5 = QPushButton('Tag five')
-		# self.tag5.setStyleSheet('border: None; text-decoration: underline')
-		# self.grid.addWidget(self.tags,7,6)
-		# self.grid.addWidget(self.tag1,8,6)
-		# self.grid.addWidget(self.tag2,8,7)
-		# self.grid.addWidget(self.tag3,8,8)
-		# self.grid.addWidget(self.tag4,9,6)
-		# self.grid.addWidget(self.tag5,9,7)
-
 		self.show()
 
 	@pyqtSlot()
@@ -177,12 +157,6 @@ class App(QWidget):
 		if tags:
 			for _k, _v in tags:
 				self.grid.addWidget(TagButton(_k),row,col)
-				# c += 1
-				# if c == 3:
-				# 	col = 6
-				# 	c = 0
-				# else:
-				# 	col += 1
 				row += 1
 		else:
 			print("No tags!")
