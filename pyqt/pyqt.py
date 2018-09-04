@@ -1,7 +1,7 @@
 import sys
 import requests
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QLineEdit, QMessageBox, 
-	QLabel, QTextEdit, QGridLayout, QRadioButton, QFileDialog)
+	QLabel, QTextEdit, QGridLayout, QRadioButton, QFileDialog, QMainWindow, QDialog)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 
@@ -10,18 +10,14 @@ from goldencorpus import GoldenCorpus
 from mesh_explosion import DataForEachMeshTerm
 from clusterer import Clusterer
 from postprocessing import PostProcessing
-# from more_mesh_terms import MoreMeshTerms
-import more_mesh_terms
+from more_mesh_terms import MoreMeshTerms
+# import more_mesh_terms
  
 class App(QWidget):
 
 	def __init__(self):
 		super().__init__()
 		self.title = 'PyQt5'
-		self.left = 10
-		self.top = 10
-		self.width = 640
-		self.height = 480
 		self.fileselected = 0
 		self.fileName = ""
 		self.rel_docs = []
@@ -192,7 +188,7 @@ class App(QWidget):
 			print("No tags!")
 
 	def representative_click(self):
-		text = self.mt1.text()
+		# text = self.mt1.text()
 		# self.searchbox.setText(text)
 		self.populateTitleAbs(self.representative_id)
 
@@ -209,11 +205,12 @@ class App(QWidget):
 		self.abs3.setText(abstracts[2])
 	
 	def more_meshterm_click(self):
-		# popup = MoreMeshTerms(self.best_mesh_terms)
-		# more_mesh_terms.main(self.best_mesh_terms)
-		# popup.show()
-		# term_id = popup.getTermId()
-		pass
+		parent = QMainWindow()
+		popup = MoreMeshTerms()
+		# print(self.best_mesh_terms)
+		popup.setupUi(self,parent,self.best_mesh_terms,self.best_mesh_terms_id)
+		parent.show()
+		parent.exec_()
 
 	def chooseFile(self): 
 		if self.fileselected:
