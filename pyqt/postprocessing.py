@@ -30,7 +30,7 @@ class PostProcessing():
         alltitles = []
         i = 0
         while(i < len(data)):
-            if count == (index+1)*3:
+            if count == (index+1)*4:
                 break
             elif (data[i] == 'P' and data[i+1] == 'M' and data[i+2] == 'I' and data[i+3] == 'D'):
                 c = 0
@@ -39,7 +39,7 @@ class PostProcessing():
                         c += 1
                     i += 1
                     
-                if count >= index*3:
+                if count >= index*4:
                     allabs.append(self.getProcessedAbs(article))
                     alltitles.append(self.getTitleFromAbs(article))
                 article = ""
@@ -63,7 +63,7 @@ class PostProcessing():
                     count -= 1
                 else:
                     i += 2
-                    while(c < 2):
+                    while(c < 2 and i < len(article)):
                         abs += article[i]
                         if(article[i] == '\n'):
                             c += 1
@@ -127,9 +127,9 @@ class PostProcessing():
         return
 
 
-    def gene_cloud(self,term_id,gene_file_name):
-
-        file_name = str(term_id)+'.json'
+    def gene_cloud(self,term_id,gene_file_name,search_term):
+        print("Gene cloud called..")
+        file_name = "data_folder/"+search_term+"/"+str(term_id)+'.json'
         f = open(file_name, 'r')
         json_object = json.load(f)
         f.close()
@@ -161,9 +161,9 @@ class PostProcessing():
                                 min_font_size = 10).fit_words(gene_dict)
         
         # plot the WordCloud image                       
-        plt.figure(figsize = (8, 8), facecolor = None)
+        fig = plt.figure(figsize = (8, 8), facecolor = None)
         plt.imshow(wordcloud)
-        plt.axis("off")
         plt.tight_layout(pad = 0)
-        
+        plt.axis("off")
+        fig.canvas.set_window_title("Gene cloud")
         plt.show()

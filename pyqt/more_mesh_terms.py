@@ -16,10 +16,6 @@ class MoreMeshTerms(object):
         self.vLayout = QVBoxLayout(self.centralWidget)
         parent.resize(600,600)
 
-        # main button
-        # self.pButton_add = QPushButton(self.centralWidget)
-        # self.pButton_add.setText('Show all mesh terms')
-
         # scroll area
         self.scrollArea = QScrollArea(self.centralWidget)
         self.scrollArea.setWidgetResizable(True)
@@ -33,12 +29,9 @@ class MoreMeshTerms(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
         # add all main to the main vLayout
-        # self.vLayout.addWidget(self.pButton_add)
         self.vLayout.addWidget(self.scrollArea)
         # set central widget
         parent.setCentralWidget(self.centralWidget)
-        # connections
-        # self.pButton_add.clicked.connect(self.addbutton)
 
 
     # def addbutton(self):
@@ -71,7 +64,7 @@ class TermButton(QPushButton):
         self.clicked.connect(self.term_clicked)
 
     def term_clicked(self):
-        print("Hello")
+        self.duplicate.current_index = 0 # Make sure result starts with index 0
         self.duplicate.populateTitleAbs(self.id)
 
 
@@ -79,6 +72,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = QMainWindow()
     ex = MoreMeshTerms()
-    ex.setupUi(window,None,None)
+    ex.setupUi(window,None,None,None)
     window.show()
     sys.exit(app.exec_())
