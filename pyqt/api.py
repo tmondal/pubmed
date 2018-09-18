@@ -1,5 +1,5 @@
 import requests
-
+import xmltodict
 
 def get_proxy():
     http_proxy  = "http://tanmo174101028:4TvZz67q@202.141.80.22:3128/"
@@ -16,8 +16,6 @@ def get_proxy():
 def query_information(query,retmax):
     proxyDict = get_proxy()
     _url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&api_key=8a5dbb9e8cf82bf8f7d80e2c180b4d4d3c09&term={}&retmax={}&retmode=json'
-    print("query: ",query)
-    print("retmax: ",retmax)
     # _res = requests.get(_url.format(query,retmax)).json()
     _res = requests.get(_url.format(query,retmax),proxies=proxyDict).json()
     return _res
@@ -35,5 +33,11 @@ def fetch_data(query,_retmax):
     _mesh_terms = _res['esearchresult']['querytranslation']
     # print('pmids: ',_pmids)
     return _pmids , _mesh_terms
-    
+
+def getMeshTerms(pmid):
+    proxyDict = get_proxy()
+    url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id={}&retmode=xml'
+    # response = requests.get(url.format(pmid)).text
+    response = requests.get(url.format(pmid), proxies=proxyDict).text
+    return xmltodict.parse(response)
 
