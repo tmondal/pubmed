@@ -11,8 +11,8 @@ class DataForEachMeshTerm():
         if self.mesh_terms and self.query:
             self.fetchMeshTermdata()
 
-    def get_data_foldername(self,query):
-        return "data_folder/" + query
+    # def get_data_foldername(self,query):
+    #     return "data_folder/" + query
 
     def get_search_term(self):
         return self.query
