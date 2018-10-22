@@ -39,13 +39,22 @@ class Clusterer:
 
 	def cluster(self):
 		data_abstract = [clusterpoint["abstracts"] for clusterpoint in self.cluster_data]
+		data_title = [clusterpoint["titles"] for clusterpoint in self.cluster_data]
 		data_query_label = [clusterpoint["query"] for clusterpoint in self.cluster_data]
 		data_query_id = [clusterpoint["queryId"] for clusterpoint in self.cluster_data]
 
+		# print(data_abstract)
+		final_abstracts = []
+		for i in range(0,len(data_abstract)):
+			abstracts = ""
+			for j in range(0,len(data_abstract[i])):
+				abstracts = abstracts+data_title[i][j]+data_abstract[i][j]
+			final_abstracts.append(abstracts)
+		
 		# Perform an IDF normalization on the output of HashingVectorizer
 		hasher = HashingVectorizer(n_features=1000, stop_words='english', norm=None, binary=False)
 		vectorizer = make_pipeline(hasher, TfidfTransformer())
-		X = vectorizer.fit_transform(data_abstract)
+		X = vectorizer.fit_transform(final_abstracts)
 		print ("n_samples: %d, n_features: %d" % X.shape)
 		# print(data_query_label)
 		# print(X)
@@ -77,7 +86,7 @@ class Clusterer:
 		for i in range(0,len(cluster_labels)):
 			query_clusters[cluster_labels[i]].append(i+1)
 
-			pmids = self.cluster_data[i]["articleIds"].split(',')
+			pmids = self.cluster_data[i]["articleIds"]
 			# print("pmids: ", pmids)
 			for pmid in pmids:
 				if pmid:
@@ -135,7 +144,5 @@ class Clusterer:
 			j += 1
 			done = 1
 		
-		# print(optimized_query)
-		# print(optimized_query_ids)
-		print(representative)
+		# print(representative)
 		return representative_id,representative,optimized_query_ids, optimized_query

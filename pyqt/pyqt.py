@@ -116,12 +116,12 @@ class App(QWidget):
 		# Add Fourth row to grid
 		self.grid.addWidget(self.title1,4,0,1,5)
 		self.grid.addWidget(self.abs1,5,0,2,5)
-		self.grid.addWidget(self.title2,7,0,1,5)
-		self.grid.addWidget(self.abs2,8,0,2,5)
-		self.grid.addWidget(self.title3,11,0,1,5)
-		self.grid.addWidget(self.abs3,12,0,2,5)
-		self.grid.addWidget(self.title4,15,0,1,5)
-		self.grid.addWidget(self.abs4,16,0,2,5)
+		self.grid.addWidget(self.title2,8,0,1,5)
+		self.grid.addWidget(self.abs2,9,0,2,5)
+		self.grid.addWidget(self.title3,12,0,1,5)
+		self.grid.addWidget(self.abs3,13,0,2,5)
+		self.grid.addWidget(self.title4,16,0,1,5)
+		self.grid.addWidget(self.abs4,17,0,2,5)
 
 		# Visualization
 		self.vizlabel = QPushButton(' ')
@@ -175,7 +175,7 @@ class App(QWidget):
 		self.meshcloud.setText('Mesh cloud')
 		self.meshcloud.setCursor(Qt.PointingHandCursor)
 		self.meshcloud.clicked.connect(self.meshcloud_clicked)
-		
+		# update term tagging
 		pp = PostProcessing()
 		tags = pp.term_tagging(self.best_mesh_terms)
 		self.tags = QPushButton('Tags:')

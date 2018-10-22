@@ -2,13 +2,14 @@ import os
 import itertools
 import json
 import api
+import xmltodict,collections
 
 class DataForEachMeshTerm():
     def __init__(self, mesh_terms, query):
         self.mesh_terms = mesh_terms
         self.query = query
-        # if self.mesh_terms and self.query:
-        #     self.fetchMeshTermdata()
+        if self.mesh_terms and self.query:
+            self.fetchMeshTermdata()
 
     def get_data_foldername(self,query):
         return "data_folder/" + query
@@ -55,25 +56,91 @@ class DataForEachMeshTerm():
             _terms = self.getMeshTermCombinations()
         else:
             print("No mesh term returned by PUBMED API..")
+            return
         if _terms and self.query:
+            print("Getting information for each mesh-term and create a json file...")
             if not os.path.exists(self.get_data_foldername(self.get_search_term())):
                 os.mkdir(self.get_data_foldername(self.get_search_term()))
-            count = 0
-            for term in _terms:
-                count = count + 1
-                _pmids, mtdummy = api.fetch_data(term,_retmax)
-                # Get abs for all ids together
-                ids = ""
-                for pmid in _pmids:
-                    ids += str(pmid) + ","
-                data = api.get_abstract(ids)
+                count = 0
+                for term in _terms:
+                    count = count + 1
+                    _pmids, mtdummy = api.fetch_data(term,_retmax)
+                    # Get abs for all ids together
+                    ids = ""
+                    for pmid in _pmids:
+                        ids += str(pmid) + ","
+                    data = api.get_abstract(ids)
+                    lines = xmltodict.parse(data)
+                    
+                    id_list = []
+                    title_list = []
+                    abstract_list = []
+                    meshterms = []
 
-                jObject = {}
-                jObject['queryId'] = count
-                jObject['query'] = term
-                jObject['articleIds'] = ids
-                jObject['abstracts'] = data
+                    article = lines['PubmedArticleSet']['PubmedArticle']
 
-                with open(self.get_data_foldername(self.get_search_term())+"/"+str(count)+'.json', 'w') as outfile:
-                    json.dump(jObject, outfile)
+                    for obj in article:
+                        text = ""
+                        title = ""
+                        citation = obj['MedlineCitation']
+                        pmid = citation['PMID']['#text']
+                        mesh_heading = []
+                        id_list.append(pmid)
+                        # print(pmid)
+
+                        # title extraction
+                        if('ArticleTitle' in citation['Article']):
+                            if(type(citation['Article']['ArticleTitle']) is list):
+                                title = citation['Article']['ArticleTitle'][0]
+                            elif(type(citation['Article']['ArticleTitle']) is str):
+                                title = citation['Article']['ArticleTitle']
+                            elif(type(citation['Article']['ArticleTitle']) is collections.OrderedDict):
+                                title = citation['Article']['ArticleTitle']['#text']
+
+                        # abstract extraction
+                        if('Abstract' in citation['Article']):
+                            abstracts = citation['Article']['Abstract']
+                            if('AbstractText' in abstracts):
+                                if(type(abstracts['AbstractText']) is list):
+                                    for abs in abstracts['AbstractText']:
+                                        if(type(abs) is collections.OrderedDict):
+                                            if('#text' in abs):
+                                                text += abs['#text']
+                                        elif(abs is not None):
+                                            text += abs
+                                elif(type(abstracts['AbstractText']) is collections.OrderedDict):
+                                    if('#text' in abstracts['AbstractText']):
+                                        text += abstracts['AbstractText']['#text']
+                                elif(type(abstracts['AbstractText']) is str):
+                                    text += abstracts['AbstractText']
+
+                        # Mesh terms associated with a pmid 
+                        temp = ""
+                        if('MeshHeadingList' in citation):
+                            for ob in citation['MeshHeadingList']['MeshHeading']:
+                                if('DescriptorName' in ob):
+                                    temp = ob['DescriptorName']['#text']
+                                if ('QualifierName' in ob):
+                                    if(type(ob['QualifierName']) is list):
+                                        for qualifier in ob['QualifierName']:
+                                            mesh_heading.append(temp+'/'+qualifier['#text'])
+                                    else:
+                                        mesh_heading.append(temp+'/'+ob['QualifierName']['#text'])
+                                else:
+                                    mesh_heading.append(temp)
+                        title_list.append(title)
+                        abstract_list.append(text)
+                        meshterms.append(mesh_heading)
+                        
+                    # build json object with relevent fields from abstract xml
+                    jObject = {}
+                    jObject['queryId'] = count
+                    jObject['query'] = term
+                    jObject['articleIds'] = id_list
+                    jObject['titles'] = title_list
+                    jObject['abstracts'] = abstract_list
+                    jObject['meshterms'] = meshterms
+
+                    with open(self.get_data_foldername(self.get_search_term())+"/"+str(count)+'.json', 'w') as outfile:
+                        json.dump(jObject, outfile)
 

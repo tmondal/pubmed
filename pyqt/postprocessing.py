@@ -19,78 +19,58 @@ class PostProcessing():
         json_object = json.load(f)
         f.close()
         abstracts = json_object["abstracts"]
-        toptitles,topabs = self.split_abstracts(index,abstracts)
+        titles = json_object["titles"]
+        mesh_terms = json_object["meshterms"]
+        toptitles,topabs = self.split_abstracts(index,abstracts,titles)
         return toptitles, topabs
 
 
-    def split_abstracts(self,index,data):
-        article = ""
+    def split_abstracts(self,index,abstracts,titles):
         count = 0
         allabs = []
         alltitles = []
-        i = 0
-        while(i < len(data)):
-            if count == (index+1)*4:
-                break
-            elif (data[i] == 'P' and data[i+1] == 'M' and data[i+2] == 'I' and data[i+3] == 'D'):
-                c = 0
-                while(c < 2):
-                    if(data[i] == '\n'):
-                        c += 1
-                    i += 1
-                    
-                if count >= index*4:
-                    allabs.append(self.getProcessedAbs(article))
-                    alltitles.append(self.getTitleFromAbs(article))
-                article = ""
-                count += 1
-
-            article += data[i]
-            i += 1
-
+        while(count < 4 and index < len(abstracts)):
+            allabs.append(self.getProcessedAbs(abstracts[index]))
+            alltitles.append(self.getProcessedTitle(titles[index]))
+            index += 1
+            count += 1
         return alltitles,allabs
-    def getProcessedAbs(self, article):
+
+
+    def getProcessedAbs(self, abstract):
         abs = ""
         i = 0
-        count = 0
         c = 0
-        while (i < len(article)):
-            if article[i] == '\n' and article[i+1] == '\n':
-                count += 1
-            if(count == 3):
-                if(article[i+2] == 'A' and (article[i+3] == 'u' or article[i+3] == 'U') and (article[i+4] == 't' or article[i+4] == 'T') 
-                and (article[i+5] == 'h' or article[i+5] == 'H') and (article[i+6] == 'o' or article[i+6] == 'O')):
-                    count -= 1
-                else:
-                    i += 2
-                    while(c < 2 and i < len(article)):
-                        abs += article[i]
-                        if(article[i] == '\n'):
-                            c += 1
-                        i += 1
-                    break
+        divide = 0
+        while(c < 2 and i < len(abstract)):
+            if(abstract[i] == '\n'):
+                i += 1
+                continue
+            abs += abstract[i]
+            divide += 1
+            if((divide >= 80 and abstract[i] == ' ') or divide >= 93):
+                if(c == 0):
+                    abs += '\n'
+                c += 1
+                divide = 0
             i += 1
-        return abs        
+        return abs
 
-    def getTitleFromAbs(self, article):
-        found = False
-        nextfound = False
-        title = ""
+    def getProcessedTitle(self, title):
+        data = ""
         i = 0
-        while (i < len(article)):
-            if not nextfound and found:
-                title += article[i]
-            if found:
-                if article[i] == '\n' and article[i+1] == '\n':
-                    nextfound = True
-            if nextfound:
-                break
-            if not found:
-                if article[i] == '\n' and article[i+1] == '\n':
-                    found = True
-                    i += 1
+        divide = 0
+        while(i < len(title)):
+            if(title[i] == '\n'):
+                i += 1
+                continue
+            data += title[i]
+            divide += 1
+            if(divide >= 80 and title[i] == ' ' or divide >= 93):
+                data += '\n'
+                divide = 0
             i += 1
-        return title
+        return data
 
     def term_tagging(self,optimized_terms):
        
@@ -135,10 +115,13 @@ class PostProcessing():
         f.close()
 
         data_abstract = json_object["abstracts"]
+        data_title = json_object["titles"]
 
-        content = data_abstract.replace('\n', ' ')
-        content = content.replace('(', ' ')
-        content = content.replace(')', ' ')
+        abstracts = ""
+        for i in range(0,len(data_abstract)):
+            abstracts = abstracts+data_title[i]+data_abstract[i]
+
+        content = abstracts.replace('\n', ' ')
         content = content.replace('.', ' ')
         content = content.replace(',', ' ')
         content = content.lower()

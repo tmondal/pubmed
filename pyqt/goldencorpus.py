@@ -1,5 +1,6 @@
 import os
 import api
+import xmltodict, collections
 from mesh_explosion import DataForEachMeshTerm
 
 
@@ -39,7 +40,7 @@ class GoldenCorpus():
         return False,""
 
     def fetchData(self):
-        print("fetchdata called..")
+        print("Fetchdata called..")
         _pmids, self.mesh_terms = api.fetch_data(self.query,10000)
         print("pmid:----------------------------------> ",len(_pmids))
         self.saveGoldenCorpus(_pmids)
@@ -52,6 +53,7 @@ class GoldenCorpus():
             os.mkdir(self.get_corpus_folder(self.query))
             #  Download abs as a group of 200
             if len(_pmids):
+                print("came")
                 slist = []
                 count = 0
                 doccount = 1
@@ -81,7 +83,9 @@ class GoldenCorpus():
                     self.split_abstracts(self.query, data)
             else:
                 print("No data found!")
+                return
         # check relevance and populate get rel_Docset
+        print("Download done.")
         print("Relevant docs creating.......")
         if os.path.exists(self.filepath):
             _filepointer = open(self.filepath,'r')
@@ -104,23 +108,81 @@ class GoldenCorpus():
             print("Genefile not found...")
 
     def split_abstracts(self,query, data):
-        # if not os.path.exists(self.get_corpus_folder(query)):
-        #     os.mkdir(self.get_corpus_folder(query))
-        lines = data.split('\n')
-        article = ""
-        count = 0
-        for line in lines:
-            dummy = line[:-1]
-            dummy = dummy.replace('[', ':')
-            dummy = dummy.replace(']', ':')
-            value = dummy.split(':')
-            if(value[0] == "PMID"):
-                pmid_value = value[1].replace(' ', '')
-                wf = open(self.get_corpus_folder(query) + "/" + pmid_value, 'w')
-                article += line
-                wf.write(article)
+
+        lines = xmltodict.parse(data)
+        article = lines['PubmedArticleSet']['PubmedArticle']
+        if(type(article) is list):
+            for obj in article:
+                text = ""
+                title = ""
+                citation = obj['MedlineCitation']
+                pmid = citation['PMID']['#text']
+                print(pmid)
+
+                # title extraction
+                if('ArticleTitle' in citation['Article']):
+                    if(type(citation['Article']['ArticleTitle']) is list):
+                        title = citation['Article']['ArticleTitle'][0]
+                    elif(type(citation['Article']['ArticleTitle']) is str):
+                        title = citation['Article']['ArticleTitle']
+                    elif(type(citation['Article']['ArticleTitle']) is collections.OrderedDict):
+                        title = citation['Article']['ArticleTitle']['#text']
+
+                # abstract extraction
+                if('Abstract' in citation['Article']):
+                    abstracts = citation['Article']['Abstract']
+                    if('AbstractText' in abstracts):
+                        if(type(abstracts['AbstractText']) is list):
+                            for abs in abstracts['AbstractText']:
+                                if(type(abs) is collections.OrderedDict):
+                                    if('#text' in abs):
+                                        text += abs['#text']
+                                elif(abs is not None):
+                                    text += abs
+                        elif(type(abstracts['AbstractText']) is collections.OrderedDict):
+                            if('#text' in abstracts['AbstractText']):
+                                text += abstracts['AbstractText']['#text']
+                        elif(type(abstracts['AbstractText']) is str):
+                            text += abstracts['AbstractText']
+                title += text
+                if(title):
+                    wf = open(self.get_corpus_folder(query) + "/" + pmid, 'w')
+                    wf.write(title)
+                    wf.close()
+        else:
+            text = ""
+            title = ""
+            citation = article['MedlineCitation']
+            pmid = citation['PMID']['#text']
+            print(pmid)
+
+            # title extraction
+            if('ArticleTitle' in citation['Article']):
+                if(type(citation['Article']['ArticleTitle']) is list):
+                    title = citation['Article']['ArticleTitle'][0]
+                elif(type(citation['Article']['ArticleTitle']) is str):
+                    title = citation['Article']['ArticleTitle']
+                elif(type(citation['Article']['ArticleTitle']) is collections.OrderedDict):
+                    title = citation['Article']['ArticleTitle']['#text']
+
+            # abstract extraction
+            if('Abstract' in citation['Article']):
+                abstracts = citation['Article']['Abstract']
+                if('AbstractText' in abstracts):
+                    if(type(abstracts['AbstractText']) is list):
+                        for abs in abstracts['AbstractText']:
+                            if(type(abs) is collections.OrderedDict):
+                                if('#text' in abs):
+                                    text += abs['#text']
+                            elif(abs is not None):
+                                text += abs
+                    elif(type(abstracts['AbstractText']) is collections.OrderedDict):
+                        if('#text' in abstracts['AbstractText']):
+                            text += abstracts['AbstractText']['#text']
+                    elif(type(abstracts['AbstractText']) is str):
+                        text += abstracts['AbstractText']
+            title += text
+            if(title):
+                wf = open(self.get_corpus_folder(query) + "/" + pmid, 'w')
+                wf.write(title)
                 wf.close()
-                article = ""
-                count += 1
-            else:
-                article += line

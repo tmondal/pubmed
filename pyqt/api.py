@@ -22,7 +22,7 @@ def query_information(query,retmax):
 
 def get_abstract(_ids):
     proxyDict = get_proxy()
-    abstracturl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&api_key=8a5dbb9e8cf82bf8f7d80e2c180b4d4d3c09&id={}&retmode=text&rettype=abstract'
+    abstracturl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&api_key=8a5dbb9e8cf82bf8f7d80e2c180b4d4d3c09&id={}&retmode=xml&rettype=abstract'
     # idabstract = requests.get(abstracturl.format(_ids)).text
     idabstract = requests.get(abstracturl.format(_ids),proxies=proxyDict).text
     return idabstract
@@ -33,11 +33,4 @@ def fetch_data(query,_retmax):
     _mesh_terms = _res['esearchresult']['querytranslation']
     # print('pmids: ',_pmids)
     return _pmids , _mesh_terms
-
-def getMeshTerms(pmid):
-    proxyDict = get_proxy()
-    url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id={}&retmode=xml'
-    # response = requests.get(url.format(pmid)).text
-    response = requests.get(url.format(pmid), proxies=proxyDict).text
-    return xmltodict.parse(response)
 
